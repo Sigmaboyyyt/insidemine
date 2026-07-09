@@ -494,6 +494,10 @@ h2 {
   transform: translateY(-3px);
 }
 
+.product-card.disabled {
+  opacity: 0.68;
+}
+
 .product-top {
   display: flex;
   align-items: start;
@@ -563,6 +567,13 @@ h2 {
 .case-card button:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
+}
+
+.product-card button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  opacity: 0.72;
+  transform: none;
 }
 
 .tag-row {
@@ -694,7 +705,7 @@ h2 {
 
 .unban-section {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 390px);
+  grid-template-columns: minmax(0, 1fr) repeat(2, minmax(240px, 340px));
   gap: 28px;
   align-items: center;
   background: linear-gradient(90deg, rgba(255, 107, 95, 0.12), rgba(85, 216, 255, 0.08));
@@ -719,6 +730,11 @@ h2 {
   width: 100%;
   background: var(--red);
   color: #190807;
+}
+
+.mute-card button {
+  background: var(--cyan);
+  color: #051218;
 }
 
 .steps {

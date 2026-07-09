@@ -1,17 +1,17 @@
 const products = [
-  { name: "Spektor", price: 40, color: "#a200ff", perks: ["Стартовый набор", "Цветной префикс"] },
-  { name: "Friton", price: 90, color: "#006308", perks: ["Больше домов", "Команды комфорта"] },
-  { name: "Qwera", price: 150, color: "#910000", perks: ["Набор ресурсов", "Доп. слоты аукциона"] },
-  { name: "GrumFeek", price: 250, color: "#0099ff", perks: ["Расширенные команды", "Красивый префикс"] },
-  { name: "Legend", price: 380, color: "#003cff", perks: ["Редкий кит", "Приоритет в очереди"] },
-  { name: "Horror", price: 400, color: "#ff6b5f", season: "Только во время Хеллоуина", perks: ["Хеллоуинский стиль", "Особый префикс"] },
-  { name: "Efrit", price: 500, color: "#020075", perks: ["Сильный набор", "Больше регионов"] },
-  { name: "Region", price: 650, color: "#910000", perks: ["Удобно для кланов", "Расширенная защита"] },
-  { name: "Wither", price: 800, color: "#fbff00", perks: ["Темный префикс", "Премиум команды"] },
-  { name: "Ice", price: 850, color: "#54DAF4", season: "Только во время Нового года", perks: ["Зимний стиль", "Праздничный набор"] },
-  { name: "Synergy", price: 1200, color: "#7700ff", perks: ["Топовые возможности", "Максимум удобства"] },
-  { name: "Eternity", price: 1900, color: "#00ff40", perks: ["Элитный статус", "Лучшие бонусы"] },
-  { name: "Naternion", price: 2600, color: "#00ff95", perks: ["Самый высокий ранг", "Особое оформление"] },
+  { name: "Spektor", prices: { 30: 19, 90: 39, forever: 69 }, color: "#a200ff", perks: ["Стартовый набор", "Цветной префикс"] },
+  { name: "Friton", prices: { 30: 39, 90: 79, forever: 119 }, color: "#006308", perks: ["Больше домов", "Команды комфорта"] },
+  { name: "Qwera", prices: { 30: 89, 90: 159, forever: 199 }, color: "#910000", perks: ["Набор ресурсов", "Доп. слоты аукциона"] },
+  { name: "GrumFeek", prices: { 30: 119, 90: 199, forever: 289 }, color: "#0099ff", perks: ["Расширенные команды", "Красивый префикс"] },
+  { name: "Legend", prices: { 30: 179, 90: 319, forever: 439 }, color: "#003cff", perks: ["Редкий кит", "Приоритет в очереди"] },
+  { name: "Horror", prices: { forever: 489 }, color: "#ff6b5f", season: "Только во время Хеллоуина", perks: ["Хеллоуинский стиль", "Особый префикс"] },
+  { name: "Efrit", prices: { 30: 249, 90: 429, forever: 599 }, color: "#020075", perks: ["Сильный набор", "Больше регионов"] },
+  { name: "Region", prices: { 30: 329, 90: 619, forever: 759 }, color: "#910000", perks: ["Удобно для кланов", "Расширенная защита"] },
+  { name: "Wither", prices: { 30: 459, 90: 799, forever: 999 }, color: "#fbff00", perks: ["Темный префикс", "Премиум команды"] },
+  { name: "Ice", prices: { forever: 1199 }, color: "#54DAF4", season: "Только во время Нового года", perks: ["Зимний стиль", "Праздничный набор"] },
+  { name: "Synergy", prices: { 30: 739, 90: 999, forever: 1499 }, color: "#7700ff", perks: ["Топовые возможности", "Максимум удобства"] },
+  { name: "Eternity", prices: { 30: 899, 90: 1399, forever: 2299 }, color: "#00ff40", perks: ["Элитный статус", "Лучшие бонусы"] },
+  { name: "Naternion", prices: { 30: 1119, 90: 1899, forever: 3499 }, color: "#00ff95", perks: ["Самый высокий ранг", "Особое оформление"] },
 ];
 
 const cases = [
@@ -37,12 +37,6 @@ const cases = [
     loot: ["Horror / Ice", "Synergy", "Eternity", "Naternion"],
   },
 ];
-
-const durationMultipliers = {
-  30: 1,
-  90: 2.35,
-  forever: 5.5,
-};
 
 const durationLabels = {
   30: "30 дней",
@@ -72,7 +66,7 @@ function formatPrice(value) {
 }
 
 function productPrice(product) {
-  return Math.round(product.price * durationMultipliers[activeDuration]);
+  return product.prices[activeDuration] ?? null;
 }
 
 function renderProducts() {
@@ -80,9 +74,11 @@ function renderProducts() {
     .map((product, index) => {
       const perks = product.perks.map((perk) => `<span class="tag">${perk}</span>`).join("");
       const season = product.season ? `<span class="tag season">${product.season}</span>` : "";
+      const price = productPrice(product);
+      const isAvailable = price !== null;
 
       return `
-        <article class="product-card" style="--rank: ${product.color}">
+        <article class="product-card ${isAvailable ? "" : "disabled"}" style="--rank: ${product.color}">
           <div class="product-top">
             <div>
               <h3>${product.name}</h3>
@@ -92,10 +88,10 @@ function renderProducts() {
           </div>
           <div class="tag-row">${perks}${season}</div>
           <div class="price-row">
-            <p class="price">${formatPrice(productPrice(product))}</p>
-            <span class="duration-label">${durationLabels[activeDuration]}</span>
+            <p class="price">${isAvailable ? formatPrice(price) : "Только навсегда"}</p>
+            <span class="duration-label">${isAvailable ? durationLabels[activeDuration] : "Выбери срок «Навсегда»"}</span>
           </div>
-          <button type="button" data-add-product="${index}">Добавить</button>
+          <button type="button" data-add-product="${index}" ${isAvailable ? "" : "disabled"}>${isAvailable ? "Добавить" : "Недоступно"}</button>
         </article>
       `;
     })
@@ -222,10 +218,17 @@ productsNode.addEventListener("click", (event) => {
   }
 
   const product = products[Number(button.dataset.addProduct)];
+  const price = productPrice(product);
+
+  if (price === null) {
+    showToast(`${product.name} доступна только навсегда`);
+    return;
+  }
+
   addToCart({
     name: product.name,
     meta: `Привилегия · ${durationLabels[activeDuration]}`,
-    price: productPrice(product),
+    price,
   });
 });
 
@@ -245,7 +248,11 @@ casesNode.addEventListener("click", (event) => {
 });
 
 document.querySelector("[data-add-unban]").addEventListener("click", () => {
-  addToCart({ name: "Разбан", meta: "Снятие блокировки", price: 150 });
+  addToCart({ name: "Разбан", meta: "Снятие блокировки", price: 299 });
+});
+
+document.querySelector("[data-add-unmute]").addEventListener("click", () => {
+  addToCart({ name: "Размут", meta: "Снятие мута в чате", price: 99 });
 });
 
 document.querySelectorAll("[data-open-cart]").forEach((button) => {
