@@ -63,6 +63,7 @@ https://ТВОЙ-САЙТ.netlify.app/.netlify/functions/issue-order
 
 ```text
 lp user Nick parent set Privilege
+lp user Nick parent set default
 lp user Nick parent addtemp Privilege 30d
 dc givekey Nick donate 5
 ```

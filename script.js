@@ -181,22 +181,25 @@ function renderCart() {
 function commandForItem(item, nickname) {
   if (item.type === "privilege") {
     if (item.duration === "forever") {
-      return `lp user ${nickname} parent set ${item.grantName}`;
+      return [`lp user ${nickname} parent set ${item.grantName}`];
     }
 
-    return `lp user ${nickname} parent addtemp ${item.grantName} ${item.duration}d`;
+    return [
+      `lp user ${nickname} parent set default`,
+      `lp user ${nickname} parent addtemp ${item.grantName} ${item.duration}d`,
+    ];
   }
 
   if (item.type === "case") {
-    return `dc givekey ${nickname} ${item.caseKey} ${item.quantity}`;
+    return [`dc givekey ${nickname} ${item.caseKey} ${item.quantity}`];
   }
 
-  return null;
+  return [];
 }
 
 function buildConsoleCommands(nickname) {
   return cart
-    .map((item) => commandForItem(item, nickname))
+    .flatMap((item) => commandForItem(item, nickname))
     .filter(Boolean);
 }
 

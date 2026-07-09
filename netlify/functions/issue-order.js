@@ -44,11 +44,14 @@ function commandForItem(item, nickname) {
     }
 
     if (item.duration === "forever") {
-      return `lp user ${nickname} parent set ${item.grantName}`;
+      return [`lp user ${nickname} parent set ${item.grantName}`];
     }
 
     if (item.duration === "30" || item.duration === "90") {
-      return `lp user ${nickname} parent addtemp ${item.grantName} ${item.duration}d`;
+      return [
+        `lp user ${nickname} parent set default`,
+        `lp user ${nickname} parent addtemp ${item.grantName} ${item.duration}d`,
+      ];
     }
 
     throw new Error("Unknown duration");
@@ -60,10 +63,10 @@ function commandForItem(item, nickname) {
     }
 
     const quantity = Math.max(1, Math.min(100, Number(item.quantity) || 1));
-    return `dc givekey ${nickname} ${item.caseKey} ${quantity}`;
+    return [`dc givekey ${nickname} ${item.caseKey} ${quantity}`];
   }
 
-  return null;
+  return [];
 }
 
 async function sendCommand(command) {
@@ -123,7 +126,7 @@ exports.handler = async (event) => {
     }
 
     const commands = payload.items
-      .map((item) => commandForItem(item, payload.nickname))
+      .flatMap((item) => commandForItem(item, payload.nickname))
       .filter(Boolean);
 
     if (commands.length === 0) {
