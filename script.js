@@ -17,6 +17,7 @@ const products = [
 const cases = [
   {
     name: "Донат кейс",
+    key: "donate",
     price: 49,
     color: "#55d8ff",
     description: "Содержит случайную привилегию до 500 рублей включительно.",
@@ -24,6 +25,7 @@ const cases = [
   },
   {
     name: "Богатый кейс",
+    key: "rich",
     price: 129,
     color: "#f6c85f",
     description: "Содержит все лучшее привилегии до 2600 рублей включительно.",
@@ -31,6 +33,7 @@ const cases = [
   },
   {
     name: "Сезонный кейс",
+    key: "seasonal",
     price: 189,
     color: "#ff7bd5",
     description: "Содержит сезонную привилегию Horror или Ice и топовые привилегии.",
@@ -115,6 +118,10 @@ function renderCases() {
           </div>
           <div class="case-footer">
             <strong>${formatPrice(caseItem.price)}</strong>
+            <label class="qty-field">
+              <span>Кол-во</span>
+              <input type="number" min="1" max="100" value="1" data-case-qty="${index}" />
+            </label>
             <button type="button" data-add-case="${index}">Добавить</button>
           </div>
         </article>
@@ -141,7 +148,7 @@ function closeCart() {
 }
 
 function addToCart(item) {
-  cart.push({ ...item, id: `cart-${Date.now()}-${nextCartId++}` });
+  cart.push({ quantity: 1, ...item, id: `cart-${Date.now()}-${nextCartId++}` });
   renderCart();
   showToast(`${item.name} добавлено в корзину`);
 }
@@ -152,7 +159,7 @@ function removeFromCart(id) {
 }
 
 function renderCart() {
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   cartCountNode.textContent = cart.length;
   cartTotalNode.textContent = formatPrice(total);
   cartEmptyNode.classList.toggle("show", cart.length === 0);
@@ -162,13 +169,35 @@ function renderCart() {
         <article class="cart-item">
           <div>
             <h3>${item.name}</h3>
-            <p>${item.meta} · ${formatPrice(item.price)}</p>
+            <p>${item.meta} · ${item.quantity} шт. · ${formatPrice(item.price * item.quantity)}</p>
           </div>
           <button type="button" data-remove="${item.id}" aria-label="Убрать ${item.name}">×</button>
         </article>
       `,
     )
     .join("");
+}
+
+function commandForItem(item, nickname) {
+  if (item.type === "privilege") {
+    if (item.duration === "forever") {
+      return `lp user ${nickname} parent set ${item.grantName}`;
+    }
+
+    return `lp user ${nickname} parent addtemp ${item.grantName} ${item.duration}d`;
+  }
+
+  if (item.type === "case") {
+    return `dc givekey ${nickname} ${item.caseKey} ${item.quantity}`;
+  }
+
+  return null;
+}
+
+function buildConsoleCommands(nickname) {
+  return cart
+    .map((item) => commandForItem(item, nickname))
+    .filter(Boolean);
 }
 
 function checkout() {
@@ -180,14 +209,29 @@ function checkout() {
     return;
   }
 
+  if (!/^[A-Za-z0-9_]{3,16}$/.test(nickname)) {
+    checkoutNote.textContent = "Ник должен быть 3-16 символов: английские буквы, цифры и нижнее подчеркивание.";
+    nicknameInput.focus();
+    return;
+  }
+
   if (cart.length === 0) {
     checkoutNote.textContent = "Добавь хотя бы один товар в корзину.";
     return;
   }
 
-  const total = cart.reduce((sum, item) => sum + item.price, 0);
-  const orderLines = cart.map((item) => `- ${item.name}: ${item.meta}, ${formatPrice(item.price)}`);
-  const message = [`Заказ InsideMine`, `Ник: ${nickname}`, ...orderLines, `Итого: ${formatPrice(total)}`].join("\n");
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const orderLines = cart.map((item) => `- ${item.name}: ${item.meta}, ${item.quantity} шт., ${formatPrice(item.price * item.quantity)}`);
+  const commands = buildConsoleCommands(nickname);
+  const message = [
+    `Заказ InsideMine`,
+    `Ник: ${nickname}`,
+    ...orderLines,
+    `Итого: ${formatPrice(total)}`,
+    ``,
+    `Команды выдачи:`,
+    ...(commands.length ? commands : ["Пока нет команд для этих товаров."]),
+  ].join("\n");
 
   if (navigator.clipboard?.writeText) {
     navigator.clipboard.writeText(message).then(() => {
@@ -226,7 +270,10 @@ productsNode.addEventListener("click", (event) => {
   }
 
   addToCart({
+    type: "privilege",
     name: product.name,
+    grantName: product.name,
+    duration: activeDuration,
     meta: `Привилегия · ${durationLabels[activeDuration]}`,
     price,
   });
@@ -240,10 +287,20 @@ casesNode.addEventListener("click", (event) => {
   }
 
   const caseItem = cases[Number(button.dataset.addCase)];
+  const qtyInput = casesNode.querySelector(`[data-case-qty="${button.dataset.addCase}"]`);
+  const quantity = Math.max(1, Math.min(100, Number(qtyInput?.value) || 1));
+
+  if (qtyInput) {
+    qtyInput.value = quantity;
+  }
+
   addToCart({
+    type: "case",
     name: caseItem.name,
+    caseKey: caseItem.key,
     meta: "Кейс с привилегиями",
     price: caseItem.price,
+    quantity,
   });
 });
 
