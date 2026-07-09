@@ -200,7 +200,60 @@ function buildConsoleCommands(nickname) {
     .filter(Boolean);
 }
 
-function checkout() {
+function buildIssuePayload(nickname) {
+  return {
+    nickname,
+    items: cart
+      .filter((item) => item.type === "privilege" || item.type === "case")
+      .map((item) => ({
+        type: item.type,
+        grantName: item.grantName,
+        duration: item.duration,
+        caseKey: item.caseKey,
+        quantity: item.quantity,
+      })),
+  };
+}
+
+async function issueOrder(nickname) {
+  let response;
+
+  try {
+    response = await fetch("/.netlify/functions/issue-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(buildIssuePayload(nickname)),
+    });
+  } catch {
+    throw new Error("функция Netlify недоступна. Открой сайт именно на Netlify и проверь деплой netlify/functions.");
+  }
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || "Auto issue failed");
+  }
+
+  return data.commands || [];
+}
+
+function copyOrderMessage(message, successText) {
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(message).then(() => {
+      checkoutNote.textContent = successText;
+      showToast("Заказ скопирован");
+    }).catch(() => {
+      checkoutNote.textContent = message;
+    });
+  } else {
+    checkoutNote.textContent = message;
+    showToast("Заказ готов");
+  }
+}
+
+async function checkout() {
   const nickname = nicknameInput.value.trim();
 
   if (!nickname) {
@@ -233,16 +286,25 @@ function checkout() {
     ...(commands.length ? commands : ["Пока нет команд для этих товаров."]),
   ].join("\n");
 
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(message).then(() => {
-      checkoutNote.textContent = "Заказ скопирован. Отправь его администратору для оплаты.";
-      showToast("Заказ скопирован");
-    }).catch(() => {
-      checkoutNote.textContent = message;
-    });
-  } else {
-    checkoutNote.textContent = message;
-    showToast("Заказ готов");
+  checkoutNote.textContent = "Выдаю заказ через API...";
+
+  try {
+    const issuedCommands = await issueOrder(nickname);
+    const issuedMessage = [
+      message,
+      ``,
+      `Авто-выдача выполнена:`,
+      ...issuedCommands,
+    ].join("\n");
+
+    copyOrderMessage(issuedMessage, "Заказ выдан через API. Команды скопированы.");
+    cart = [];
+    renderCart();
+  } catch (error) {
+    copyOrderMessage(
+      `${message}\n\nАвто-выдача не выполнена: ${error.message}`,
+      "Авто-выдача не сработала. Команды скопированы для ручной выдачи.",
+    );
   }
 }
 

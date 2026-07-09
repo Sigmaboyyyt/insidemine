@@ -5,19 +5,19 @@
 1. Открой https://app.netlify.com/drop
 2. Перетащи туда всю папку `site insidemine` или архив с файлами:
    - `index.html`
-   - `payment.html`
    - `rules.html`
    - `styles.css`
    - `script.js`
 3. Netlify сразу выдаст публичную ссылку вида:
    `https://random-name.netlify.app`
 
+Для авто-выдачи через API используй Netlify и настрой переменные из `NETLIFY_API_SETUP.md`.
+
 ## Через GitHub Pages
 
 1. Создай репозиторий на GitHub.
 2. Загрузи в него файлы:
    - `index.html`
-   - `payment.html`
    - `rules.html`
    - `styles.css`
    - `script.js`
