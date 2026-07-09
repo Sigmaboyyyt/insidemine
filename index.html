@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InsideMine - Донат магазин</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="InsideMine">
+        <span class="brand-mark">IM</span>
+        <span>InsideMine</span>
+      </a>
+      <nav class="nav" aria-label="Главная навигация">
+        <a href="index.html#shop">Магазин</a>
+        <a href="payment.html">Оплата</a>
+        <a href="rules.html">Правила</a>
+      </nav>
+      <button class="cart-button" type="button" data-open-cart>
+        <span class="cart-icon" aria-hidden="true">▣</span>
+        <span>Корзина</span>
+        <strong data-cart-count>0</strong>
+      </button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-art" aria-hidden="true">
+          <div class="sky"></div>
+          <div class="sun"></div>
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+          <div class="mountain mountain-a"></div>
+          <div class="mountain mountain-b"></div>
+          <div class="ground"></div>
+          <div class="ore ore-a"></div>
+          <div class="ore ore-b"></div>
+          <div class="portal"></div>
+          <div class="pickaxe"></div>
+        </div>
+        <div class="hero-content">
+          <p class="eyebrow">Официальный магазин сервера</p>
+          <h1 id="hero-title">InsideMine</h1>
+          <p>
+            Покупай привилегии на 30 дней, 90 дней или навсегда, открывай кейсы,
+            добавляй разбан в корзину и оформляй заказ для своего ника.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#shop">Выбрать привилегию</a>
+            <a class="secondary-link" href="#cases">Открыть кейсы</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="shop-section" id="shop" aria-labelledby="shop-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Донат привилегии</p>
+            <h2 id="shop-title">Выбери статус</h2>
+          </div>
+          <div class="duration-control" role="group" aria-label="Срок привилегии">
+            <button class="active" type="button" data-duration="30">30 дней</button>
+            <button type="button" data-duration="90">90 дней</button>
+            <button type="button" data-duration="forever">Навсегда</button>
+          </div>
+        </div>
+
+        <div class="products-grid" data-products></div>
+      </section>
+
+      <section class="cases-section" id="cases" aria-labelledby="cases-title">
+        <div class="section-heading">
+          <div>
+          <p class="eyebrow">Случайные привилегии</p>
+          <h2 id="cases-title">Кейсы</h2>
+          </div>
+          <p class="section-copy">
+            Выбирай кейс под свой бюджет: в каждом кейсе выпадают только
+            привилегии сервера.
+          </p>
+        </div>
+        <div class="cases-grid" data-cases></div>
+      </section>
+
+      <section class="unban-section" id="unban" aria-labelledby="unban-title">
+        <div>
+          <p class="eyebrow">Вернуться в игру</p>
+          <h2 id="unban-title">Разбан аккаунта</h2>
+          <p>
+            Разбан помогает быстро снять блокировку, если причина не связана с
+            серьезным вредом серверу. Перед покупкой укажи точный ник.
+          </p>
+        </div>
+        <div class="unban-card">
+          <span class="badge">Популярно</span>
+          <h3>Разбан</h3>
+          <p class="price">150 ₽</p>
+          <button type="button" data-add-unban>Добавить в корзину</button>
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="cart-panel" data-cart-panel aria-hidden="true">
+      <div class="cart-backdrop" data-close-cart></div>
+      <div class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div class="cart-head">
+          <h2 id="cart-title">Корзина</h2>
+          <button type="button" class="icon-button" data-close-cart aria-label="Закрыть">×</button>
+        </div>
+        <label class="field">
+          <span>Ник игрока</span>
+          <input type="text" data-nickname placeholder="Например: Steve" maxlength="24" />
+        </label>
+        <div class="cart-items" data-cart-items></div>
+        <div class="cart-empty" data-cart-empty>Корзина пока пустая.</div>
+        <div class="cart-total">
+          <span>Итого</span>
+          <strong data-cart-total>0 ₽</strong>
+        </div>
+        <button class="checkout-button" type="button" data-checkout>Оформить заказ</button>
+        <p class="checkout-note" data-checkout-note>
+          Заказ подготовится как сообщение, которое можно отправить администратору.
+        </p>
+      </div>
+    </aside>
+
+    <div class="toast" data-toast aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
