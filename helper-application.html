@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InsideMine - Подача на хелпера</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="InsideMine">
+        <span class="brand-mark">IM</span>
+        <span>InsideMine</span>
+      </a>
+      <nav class="nav" aria-label="Главная навигация">
+        <a href="index.html#shop">Магазин</a>
+        <a href="forum.html">Форум</a>
+        <a href="rules.html">Правила</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero forum-hero" aria-labelledby="helper-title">
+        <p class="eyebrow">Форум / Набор персонала</p>
+        <h1 id="helper-title">Подача на хелпера</h1>
+        <p>Заполните анкету, и заявка появится отдельной темой на форуме.</p>
+      </section>
+
+      <section class="forum-section helper-section" aria-labelledby="helper-form-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Новая заявка</p>
+            <h2 id="helper-form-title">Анкета хелпера</h2>
+          </div>
+        </div>
+
+        <form class="helper-form" data-forum-form data-form-type="Заявка на хелпера">
+          <label>
+            1. Игровой ник
+            <input name="Игровой ник" type="text" placeholder="Steve" required />
+          </label>
+          <label>
+            2. Как вас зовут
+            <input name="Как вас зовут" type="text" required />
+          </label>
+          <label>
+            3. Возраст
+            <input name="Возраст" type="text" required />
+          </label>
+          <label>
+            4. Был ли опыт в данной сфере?
+            <textarea name="Был ли опыт в данной сфере?" rows="4" required></textarea>
+          </label>
+          <label>
+            5. Сколько времени готовы уделять серверу? (в часах)
+            <input name="Сколько времени готовы уделять серверу? (в часах)" type="text" placeholder="Например: 3-5 часов" required />
+          </label>
+          <label>
+            6. Расскажите о себе
+            <textarea name="Расскажите о себе" rows="5" required></textarea>
+          </label>
+          <label>
+            7. Как вы видите себя в Персонале Модерации?
+            <textarea name="Как вы видите себя в Персонале Модерации?" rows="5" required></textarea>
+          </label>
+          <label>
+            8. Как вы считаете, чем должен заниматься Персонал Модерации?
+            <textarea name="Как вы считаете, чем должен заниматься Персонал Модерации?" rows="5" required></textarea>
+          </label>
+          <label>
+            9. Замечали ли вы минусы в нынешнем Персонале Модерации? Если да, то какие.
+            <textarea name="Замечали ли вы минусы в нынешнем Персонале Модерации? Если да, то какие." rows="5" required></textarea>
+          </label>
+          <button type="submit">Создать заявку</button>
+        </form>
+      </section>
+    </main>
+
+    <div class="toast" data-toast aria-live="polite"></div>
+    <script src="forum.js"></script>
+  </body>
+</html>

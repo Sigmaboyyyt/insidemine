@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InsideMine - Жалоба на персонал разработки</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="InsideMine">
+        <span class="brand-mark">IM</span>
+        <span>InsideMine</span>
+      </a>
+      <nav class="nav" aria-label="Главная навигация">
+        <a href="index.html#shop">Магазин</a>
+        <a href="forum.html">Форум</a>
+        <a href="rules.html">Правила</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero forum-hero" aria-labelledby="complaint-title">
+        <p class="eyebrow">Форум / Разработка</p>
+        <h1 id="complaint-title">Жалоба на персонал разработки</h1>
+        <p>Опишите ситуацию с сотрудником разработки, чтобы создать отдельную тему.</p>
+      </section>
+
+      <section class="forum-section" aria-labelledby="form-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Новая тема</p>
+            <h2 id="form-title">Форма жалобы</h2>
+          </div>
+        </div>
+
+        <form class="forum-card forum-form-page" data-forum-form data-form-type="Жалоба на персонал разработки">
+          <span class="forum-badge">Разработка</span>
+          <label>
+            Ваш ник
+            <input name="Ваш ник" type="text" placeholder="Steve" required />
+          </label>
+          <label>
+            Ник сотрудника
+            <input name="Ник сотрудника" type="text" required />
+          </label>
+          <label>
+            Что произошло
+            <textarea name="Что произошло" rows="6" required></textarea>
+          </label>
+          <label>
+            Почему вы считаете это нарушением
+            <textarea name="Почему вы считаете это нарушением" rows="5"></textarea>
+          </label>
+          <label>
+            Доказательства
+            <input name="Доказательства" type="text" placeholder="Ссылка на скрин/видео" />
+          </label>
+          <button type="submit">Создать тему</button>
+        </form>
+      </section>
+    </main>
+
+    <div class="toast" data-toast aria-live="polite"></div>
+    <script src="forum.js"></script>
+  </body>
+</html>

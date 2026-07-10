@@ -1288,6 +1288,18 @@ h2 {
   color: #220605;
 }
 
+.rules-window:nth-child(2) .rule-punishment {
+  border-color: rgba(255, 107, 95, 0.58);
+  background:
+    linear-gradient(135deg, rgba(255, 107, 95, 0.28), rgba(246, 200, 95, 0.12)),
+    rgba(50, 8, 8, 0.34);
+}
+
+.rules-window:nth-child(2) .rule-punishment p {
+  color: #ffd3ce;
+  font-weight: 900;
+}
+
 .rule-note {
   grid-column: 1 / -1;
   border-color: rgba(85, 216, 255, 0.26);
@@ -1310,6 +1322,54 @@ h2 {
   gap: 16px;
 }
 
+.forum-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.forum-menu-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(200, 243, 90, 0.12), transparent 34%),
+    linear-gradient(315deg, rgba(85, 216, 255, 0.1), transparent 40%),
+    var(--surface);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.16);
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.forum-menu-card:hover {
+  border-color: rgba(200, 243, 90, 0.48);
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.28),
+    0 0 34px rgba(200, 243, 90, 0.13);
+  transform: translateY(-3px);
+}
+
+.forum-menu-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.helper-link-card {
+  background:
+    linear-gradient(135deg, rgba(50, 213, 131, 0.18), transparent 34%),
+    linear-gradient(315deg, rgba(246, 200, 95, 0.13), transparent 42%),
+    var(--surface);
+}
+
 .forum-card,
 .helper-form {
   border: 1px solid var(--line);
@@ -1325,6 +1385,10 @@ h2 {
   flex-direction: column;
   gap: 13px;
   padding: 18px;
+}
+
+.forum-form-page {
+  max-width: 880px;
 }
 
 .forum-badge {
@@ -1395,9 +1459,7 @@ h2 {
   padding: 20px;
 }
 
-.helper-form label:nth-of-type(5),
-.helper-form label:nth-of-type(6),
-.helper-form label:nth-of-type(7),
+.helper-form label:nth-of-type(n + 4),
 .helper-form button {
   grid-column: 1 / -1;
 }
@@ -2051,6 +2113,7 @@ h2 {
   }
 
   .forum-grid,
+  .forum-menu-grid,
   .helper-form,
   .thread-layout {
     grid-template-columns: 1fr;

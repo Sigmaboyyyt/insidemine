@@ -13,12 +13,14 @@ let threads = loadThreads();
 
 const categoryNames = {
   player: "Жалоба на игрока",
-  admin: "Жалоба на администрацию",
-  tech: "Тех раздел",
+  development: "Жалоба на разработку",
+  moderation: "Жалоба на модерацию",
+  creative: "Жалоба на творчество",
   helper: "Заявка на хелпера",
 };
 
 function showToast(message) {
+  if (!toast) return;
   window.clearTimeout(toastTimer);
   toast.textContent = message;
   toast.classList.add("show");
@@ -50,8 +52,9 @@ function escapeHtml(value) {
 function getCategory(type) {
   const value = type.toLowerCase();
   if (value.includes("игрок")) return "player";
-  if (value.includes("админ")) return "admin";
-  if (value.includes("тех")) return "tech";
+  if (value.includes("разработ")) return "development";
+  if (value.includes("модерац")) return "moderation";
+  if (value.includes("творч")) return "creative";
   return "helper";
 }
 
@@ -65,7 +68,7 @@ function makeTitle(type, fields) {
   if (type.includes("хелпера")) return `Заявка на хелпера от ${nick}`;
 
   const target = fields.find((field) =>
-    /нарушителя|администратор/i.test(field.label)
+    /нарушителя|администратор|модератор|сотрудник/i.test(field.label)
   );
   return target?.value ? `${type}: ${target.value}` : `${type}: ${nick}`;
 }
@@ -153,6 +156,7 @@ function getFilteredThreads() {
 }
 
 function renderThreadList() {
+  if (!threadList) return;
   updateCounts();
   const filtered = getFilteredThreads();
 
@@ -169,7 +173,7 @@ function renderThreadList() {
 
   threadList.innerHTML = filtered.map((thread) => `
     <button class="thread-card ${thread.id === activeThreadId ? "active" : ""}" type="button" data-open-thread="${thread.id}">
-      <span class="thread-category">${categoryNames[thread.category]}</span>
+      <span class="thread-category">${categoryNames[thread.category] || escapeHtml(thread.type)}</span>
       <strong>${escapeHtml(thread.title)}</strong>
       <span class="thread-meta">
         <span>${escapeHtml(thread.author)}</span>
@@ -181,6 +185,7 @@ function renderThreadList() {
 }
 
 function renderThreadView() {
+  if (!threadView) return;
   const thread = threads.find((item) => item.id === activeThreadId);
 
   if (!thread) {
@@ -197,7 +202,7 @@ function renderThreadView() {
   threadView.innerHTML = `
     <div class="thread-view-head">
       <div>
-        <span class="thread-category">${categoryNames[thread.category]}</span>
+        <span class="thread-category">${categoryNames[thread.category] || escapeHtml(thread.type)}</span>
         <h3>${escapeHtml(thread.title)}</h3>
         <p>Автор: ${escapeHtml(thread.author)} • создано ${formatDate(thread.createdAt)}</p>
       </div>
@@ -269,8 +274,15 @@ forms.forEach((form) => {
     });
 
     renderForum();
-    document.querySelector("#threads")?.scrollIntoView({ behavior: "smooth", block: "start" });
     showToast("Тема создана");
+
+    if (document.querySelector("#threads")) {
+      document.querySelector("#threads")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.setTimeout(() => {
+        window.location.href = `forum.html?thread=${encodeURIComponent(thread.id)}`;
+      }, 450);
+    }
   });
 });
 
@@ -341,7 +353,11 @@ threadView?.addEventListener("submit", (event) => {
   showToast("Ответ добавлен");
 });
 
-if (!activeThreadId && threads.length > 0) {
+const requestedThreadId = new URLSearchParams(window.location.search).get("thread");
+
+if (requestedThreadId && threads.some((thread) => thread.id === requestedThreadId)) {
+  activeThreadId = requestedThreadId;
+} else if (!activeThreadId && threads.length > 0) {
   activeThreadId = threads[0].id;
 }
 
