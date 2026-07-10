@@ -1,4 +1,5 @@
 const STORAGE_KEY = "insidemine_forum_threads_v1";
+const API_URL = "/.netlify/functions/forum-threads";
 
 const forms = document.querySelectorAll("[data-forum-form]");
 const toast = document.querySelector("[data-toast]");
@@ -9,7 +10,8 @@ const tabs = document.querySelector("[data-forum-tabs]");
 let toastTimer;
 let activeFilter = "all";
 let activeThreadId = null;
-let threads = loadThreads();
+let threads = [];
+let apiAvailable = false;
 
 const categoryNames = {
   player: "Жалоба на игрока",
@@ -24,10 +26,10 @@ function showToast(message) {
   window.clearTimeout(toastTimer);
   toast.textContent = message;
   toast.classList.add("show");
-  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2400);
+  toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
 }
 
-function loadThreads() {
+function loadLocalThreads() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? JSON.parse(saved) : [];
@@ -36,8 +38,42 @@ function loadThreads() {
   }
 }
 
-function saveThreads() {
+function saveLocalThreads() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(threads));
+}
+
+async function loadThreads() {
+  try {
+    const response = await fetch(API_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error("Forum API unavailable");
+
+    const data = await response.json();
+    apiAvailable = true;
+    threads = Array.isArray(data.threads) ? data.threads : [];
+  } catch {
+    apiAvailable = false;
+    threads = loadLocalThreads();
+  }
+}
+
+async function syncForum(action, payload = {}) {
+  if (!apiAvailable) {
+    saveLocalThreads();
+    return;
+  }
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, ...payload }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Forum API error");
+  }
+
+  const data = await response.json();
+  threads = Array.isArray(data.threads) ? data.threads : threads;
 }
 
 function escapeHtml(value) {
@@ -165,7 +201,7 @@ function renderThreadList() {
       <div class="thread-empty">
         <p class="eyebrow">Пока пусто</p>
         <h3>Создай первую тему</h3>
-        <p>Выбери форму ниже, заполни ее и отправь.</p>
+        <p>Выбери раздел форума, заполни форму и отправь.</p>
       </div>
     `;
     return;
@@ -254,8 +290,18 @@ function renderForum() {
   renderThreadView();
 }
 
+function selectRequestedThread() {
+  const requestedThreadId = new URLSearchParams(window.location.search).get("thread");
+
+  if (requestedThreadId && threads.some((thread) => thread.id === requestedThreadId)) {
+    activeThreadId = requestedThreadId;
+  } else if (!activeThreadId && threads.length > 0) {
+    activeThreadId = threads[0].id;
+  }
+}
+
 forms.forEach((form) => {
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!form.reportValidity()) {
@@ -266,18 +312,25 @@ forms.forEach((form) => {
     threads.unshift(thread);
     activeThreadId = thread.id;
     activeFilter = "all";
-    saveThreads();
     form.reset();
+    renderForum();
+
+    try {
+      await syncForum("create", { thread });
+      activeThreadId = thread.id;
+      showToast(apiAvailable ? "Тема создана" : "Тема создана локально");
+    } catch {
+      saveLocalThreads();
+      showToast("Тема создана локально, API недоступен");
+    }
 
     document.querySelectorAll("[data-filter]").forEach((button) => {
       button.classList.toggle("active", button.dataset.filter === activeFilter);
     });
 
-    renderForum();
-    showToast("Тема создана");
-
     if (document.querySelector("#threads")) {
       document.querySelector("#threads")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      renderForum();
     } else {
       window.setTimeout(() => {
         window.location.href = `forum.html?thread=${encodeURIComponent(thread.id)}`;
@@ -305,7 +358,7 @@ threadList?.addEventListener("click", (event) => {
   renderForum();
 });
 
-threadView?.addEventListener("click", (event) => {
+threadView?.addEventListener("click", async (event) => {
   const thread = threads.find((item) => item.id === activeThreadId);
   if (!thread) return;
 
@@ -313,9 +366,17 @@ threadView?.addEventListener("click", (event) => {
   if (statusButton) {
     thread.status = statusButton.dataset.status;
     thread.updatedAt = new Date().toISOString();
-    saveThreads();
     renderForum();
-    showToast("Статус обновлен");
+
+    try {
+      await syncForum("status", { id: thread.id, status: thread.status });
+      showToast("Статус обновлен");
+    } catch {
+      saveLocalThreads();
+      showToast("Статус сохранен локально");
+    }
+
+    renderForum();
     return;
   }
 
@@ -325,15 +386,24 @@ threadView?.addEventListener("click", (event) => {
   }
 
   if (event.target.closest("[data-delete-thread]")) {
-    threads = threads.filter((item) => item.id !== activeThreadId);
+    const deletedId = activeThreadId;
+    threads = threads.filter((item) => item.id !== deletedId);
     activeThreadId = threads[0]?.id || null;
-    saveThreads();
     renderForum();
-    showToast("Тема удалена");
+
+    try {
+      await syncForum("delete", { id: deletedId });
+      showToast("Тема удалена");
+    } catch {
+      saveLocalThreads();
+      showToast("Тема удалена локально");
+    }
+
+    renderForum();
   }
 });
 
-threadView?.addEventListener("submit", (event) => {
+threadView?.addEventListener("submit", async (event) => {
   const form = event.target.closest("[data-reply-form]");
   if (!form) return;
 
@@ -342,23 +412,36 @@ threadView?.addEventListener("submit", (event) => {
   if (!thread || !form.reportValidity()) return;
 
   const data = new FormData(form);
-  thread.replies.push({
+  const reply = {
     author: String(data.get("author")).trim(),
     text: String(data.get("text")).trim(),
     createdAt: new Date().toISOString(),
-  });
+  };
+
+  thread.replies.push(reply);
   thread.updatedAt = new Date().toISOString();
-  saveThreads();
+  form.reset();
   renderForum();
-  showToast("Ответ добавлен");
+
+  try {
+    await syncForum("reply", { id: thread.id, reply });
+    showToast("Ответ добавлен");
+  } catch {
+    saveLocalThreads();
+    showToast("Ответ сохранен локально");
+  }
+
+  renderForum();
 });
 
-const requestedThreadId = new URLSearchParams(window.location.search).get("thread");
+async function initForum() {
+  await loadThreads();
+  selectRequestedThread();
+  renderForum();
 
-if (requestedThreadId && threads.some((thread) => thread.id === requestedThreadId)) {
-  activeThreadId = requestedThreadId;
-} else if (!activeThreadId && threads.length > 0) {
-  activeThreadId = threads[0].id;
+  if (!apiAvailable && location.protocol !== "file:") {
+    showToast("Форум временно работает локально");
+  }
 }
 
-renderForum();
+initForum();
