@@ -5,9 +5,11 @@
 1. Открой https://app.netlify.com/drop
 2. Перетащи туда всю папку `site insidemine` или архив с файлами:
    - `index.html`
+   - `forum.html`
    - `rules.html`
    - `styles.css`
    - `script.js`
+   - `forum.js`
 3. Netlify сразу выдаст публичную ссылку вида:
    `https://random-name.netlify.app`
 
@@ -18,9 +20,11 @@
 1. Создай репозиторий на GitHub.
 2. Загрузи в него файлы:
    - `index.html`
+   - `forum.html`
    - `rules.html`
    - `styles.css`
    - `script.js`
+   - `forum.js`
 3. Открой `Settings` -> `Pages`.
 4. В `Build and deployment` выбери:
    - Source: `Deploy from a branch`

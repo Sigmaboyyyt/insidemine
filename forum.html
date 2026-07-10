@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InsideMine - Форум</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="InsideMine">
+        <span class="brand-mark">IM</span>
+        <span>InsideMine</span>
+      </a>
+      <nav class="nav" aria-label="Главная навигация">
+        <a href="index.html#shop">Магазин</a>
+        <a href="forum.html">Форум</a>
+        <a href="rules.html">Правила</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-hero forum-hero" aria-labelledby="forum-title">
+        <p class="eyebrow">Обращения и набор</p>
+        <h1 id="forum-title">Форум InsideMine</h1>
+        <p>
+          Здесь можно подготовить жалобу на игрока, администрацию, техническую
+          проблему или заявку на должность хелпера.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-link" href="#complaints">Жалобы</a>
+          <a class="secondary-link" href="#helper">Подать на хелпера</a>
+          <a class="secondary-link" href="#threads">Темы форума</a>
+        </div>
+      </section>
+
+      <section class="forum-section forum-board-section" id="threads" aria-labelledby="threads-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Живая лента</p>
+            <h2 id="threads-title">Темы форума</h2>
+          </div>
+          <p class="section-copy">
+            После отправки формы здесь появится отдельная тема: ее можно открыть,
+            дополнить ответами и пометить статусом.
+          </p>
+        </div>
+
+        <div class="forum-tabs" data-forum-tabs>
+          <button class="active" type="button" data-filter="all">Все <span data-count="all">0</span></button>
+          <button type="button" data-filter="player">Игроки <span data-count="player">0</span></button>
+          <button type="button" data-filter="admin">Админы <span data-count="admin">0</span></button>
+          <button type="button" data-filter="tech">Тех раздел <span data-count="tech">0</span></button>
+          <button type="button" data-filter="helper">Хелперы <span data-count="helper">0</span></button>
+        </div>
+
+        <div class="thread-layout">
+          <div class="thread-list" data-thread-list aria-live="polite"></div>
+          <article class="thread-view" data-thread-view>
+            <div class="thread-placeholder">
+              <p class="eyebrow">Нет выбранной темы</p>
+              <h3>Отправь жалобу или заявку</h3>
+              <p>Карточка автоматически появится в форуме и откроется здесь.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="forum-section" id="complaints" aria-labelledby="complaints-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Разделы форума</p>
+            <h2 id="complaints-title">Жалобы</h2>
+          </div>
+          <p class="section-copy">
+            Заполни форму, нажми кнопку, и сайт создаст тему в форуме.
+          </p>
+        </div>
+
+        <div class="forum-grid">
+          <form class="forum-card" data-forum-form data-form-type="Жалоба на игрока">
+            <span class="forum-badge">Игроки</span>
+            <h3>Жалоба на игрока</h3>
+            <label>
+              Ваш ник
+              <input name="Ваш ник" type="text" placeholder="Steve" required />
+            </label>
+            <label>
+              Ник нарушителя
+              <input name="Ник нарушителя" type="text" placeholder="BadPlayer" required />
+            </label>
+            <label>
+              Пункт правил
+              <input name="Пункт правил" type="text" placeholder="Например: 2.3" />
+            </label>
+            <label>
+              Описание ситуации
+              <textarea name="Описание ситуации" rows="5" required></textarea>
+            </label>
+            <label>
+              Доказательства
+              <input name="Доказательства" type="text" placeholder="Ссылка на скрин/видео" />
+            </label>
+            <button type="submit">Подготовить жалобу</button>
+          </form>
+
+          <form class="forum-card" data-forum-form data-form-type="Жалоба на администрацию">
+            <span class="forum-badge">Администрация</span>
+            <h3>Жалоба на Администрацию</h3>
+            <label>
+              Ваш ник
+              <input name="Ваш ник" type="text" placeholder="Steve" required />
+            </label>
+            <label>
+              Ник администратора
+              <input name="Ник администратора" type="text" required />
+            </label>
+            <label>
+              Что произошло
+              <textarea name="Что произошло" rows="5" required></textarea>
+            </label>
+            <label>
+              Почему решение неверное
+              <textarea name="Почему решение неверное" rows="4"></textarea>
+            </label>
+            <label>
+              Доказательства
+              <input name="Доказательства" type="text" placeholder="Ссылка на скрин/видео" />
+            </label>
+            <button type="submit">Подготовить жалобу</button>
+          </form>
+
+          <form class="forum-card" data-forum-form data-form-type="Жалоба по техническому разделу">
+            <span class="forum-badge">Тех раздел</span>
+            <h3>Жалоба по тех разделу</h3>
+            <label>
+              Ваш ник
+              <input name="Ваш ник" type="text" placeholder="Steve" required />
+            </label>
+            <label>
+              Тип проблемы
+              <input name="Тип проблемы" type="text" placeholder="Баг, лаг, ошибка покупки" required />
+            </label>
+            <label>
+              Когда заметили
+              <input name="Когда заметили" type="text" placeholder="Дата/примерное время" />
+            </label>
+            <label>
+              Описание проблемы
+              <textarea name="Описание проблемы" rows="5" required></textarea>
+            </label>
+            <label>
+              Скриншот или видео
+              <input name="Скриншот или видео" type="text" placeholder="Ссылка" />
+            </label>
+            <button type="submit">Подготовить обращение</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="forum-section helper-section" id="helper" aria-labelledby="helper-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Набор персонала</p>
+            <h2 id="helper-title">Подача на хелпера</h2>
+          </div>
+        </div>
+
+        <form class="helper-form" data-forum-form data-form-type="Заявка на хелпера">
+          <label>
+            1. Ник
+            <input name="Ник" type="text" placeholder="Steve" required />
+          </label>
+          <label>
+            2. Привилегия
+            <input name="Привилегия" type="text" placeholder="Например: Legend" required />
+          </label>
+          <label>
+            3. Был ли опыт
+            <textarea name="Был ли опыт" rows="4" required></textarea>
+          </label>
+          <label>
+            4. Сколько часов в день играете
+            <input name="Сколько часов в день играете" type="text" placeholder="Например: 3-5 часов" required />
+          </label>
+          <label>
+            5. Расскажите о себе
+            <textarea name="Расскажите о себе" rows="5" required></textarea>
+          </label>
+          <label>
+            6. Как вы видите себя в роли хелпера
+            <textarea name="Как вы видите себя в роли хелпера" rows="5" required></textarea>
+          </label>
+          <label>
+            7. Что значит в вашем мнении быть хелпером
+            <textarea name="Что значит в вашем мнении быть хелпером" rows="5" required></textarea>
+          </label>
+          <button type="submit">Подготовить заявку</button>
+        </form>
+      </section>
+    </main>
+
+    <div class="toast" data-toast aria-live="polite"></div>
+    <script src="forum.js"></script>
+  </body>
+</html>
